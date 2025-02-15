@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <textarea id="editor" cols="80" rows="20"></textarea>
+  
+  <script src="https://unpkg.com/sharedb-client-browser/dist/sharedb.js"></script>
+  <script>
+    const connection = new sharedb.Connection(new WebSocket('ws://localhost:8080'));
+    const doc = connection.get('examples', 'textarea');
+    
+    doc.subscribe(() => {
+      document.getElementById('editor').value = doc.data.content || '';
+      document.getElementById('editor').addEventListener('input', (e) => {
+        doc.submitOp([{ p: ['content'], oi: e.target.value }]);
+      });
+      doc.on('op', () => document.getElementById('editor').value = doc.data.content);
+    });
+  </script>
+</body>
+</html>
